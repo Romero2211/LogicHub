@@ -1,0 +1,116 @@
+<nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-[#94a3b8]">
+  <%= link_to "Главная", root_path, class: "hover:text-white" %>
+  <span>›</span>
+  <%= link_to category_label(@post.category), category_path(@post.category), class: "hover:text-white" %>
+  <span>›</span>
+  <span class="text-white"><%= truncate(@post.title, length: 40) %></span>
+</nav>
+
+<article class="rounded-2xl border border-[#2a2a32] bg-[#1a1a1f] p-6 md:p-8">
+  <%= link_to category_label(@post.category), category_path(@post.category),
+      class: "inline-block rounded-md px-2 py-1 text-xs font-medium #{category_badge_classes(@post.category)}" %>
+
+  <h1 class="mt-4 text-2xl font-bold md:text-4xl"><%= @post.title %></h1>
+
+  <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[#94a3b8]">
+    <p>
+      <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#7c3aed]/30 text-xs text-white">
+        <%= @post.user.email.to_s.first.upcase %>
+      </span>
+      <span class="ml-2 text-white"><%= @post.user.email %></span>
+      · <%= @post.created_at.strftime("%d.%m.%Y, %H:%M") %>
+    </p>
+
+    <% if logged_in? && @post.user == current_user %>
+      <p class="flex gap-3">
+        <%= link_to "Редактировать", edit_post_path(@post), class: "hover:text-white" %>
+        <%= button_to "Удалить", @post, method: :delete, class: "text-red-400 hover:text-red-300", data: { turbo_confirm: "Удалить пост?" } %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="mt-6 space-y-4 leading-7 text-[#cbd5e1]">
+    <%= simple_format(@post.body) %>
+  </div>
+
+  <% if @post.image.attached? %>
+    <div class="mt-6 overflow-hidden rounded-xl border border-[#2a2a32]">
+      <%= image_tag @post.image, class: "w-full object-cover" %>
+    </div>
+  <% end %>
+
+  <% if @post.source_url.present? %>
+    <p class="mt-6 text-sm text-[#94a3b8]">
+      Источник:
+      <%= link_to @post.source_url, @post.source_url, target: "_blank", rel: "noopener", class: "text-[#7c3aed] hover:underline" %>
+    </p>
+  <% end %>
+
+  <p class="mt-6 flex flex-wrap items-center gap-4 border-t border-[#2a2a32] pt-4 text-sm text-[#94a3b8]">
+    <%= render "likes/button", record: @post %>
+    <span>💬 <%= @post.comments.count %> комментариев</span>
+  </p>
+</article>
+
+<%= turbo_frame_tag "comments_feed" do %>
+<section class="mt-10">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <h2 class="text-xl font-semibold">Комментарии (<%= @post.comments.count %>)</h2>
+    <% if @comments.any? %>
+      <%= render "shared/sort",
+          param_name: :comment_sort,
+          options: Comment::SORTS,
+          selected: @comment_sort,
+          turbo_frame: "comments_feed" %>
+    <% end %>
+  </div>
+
+  <% if @comments.any? %>
+    <div class="space-y-3">
+      <% @comments.each do |comment| %>
+        <div class="rounded-xl border border-[#2a2a32] bg-[#1a1a1f] p-4">
+          <div class="flex items-start justify-between gap-3">
+            <p class="text-sm">
+              <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#2a2a32] text-xs">
+                <%= comment.user.email.to_s.first.upcase %>
+              </span>
+              <span class="ml-2 font-medium"><%= comment.user.email %></span>
+              <span class="text-[#94a3b8]"> · <%= comment.created_at.strftime("%d.%m.%Y %H:%M") %></span>
+            </p>
+            <% if logged_in? && comment.user == current_user %>
+              <p class="flex gap-3 text-sm text-[#94a3b8]">
+                <%= link_to "Редактировать", edit_comment_path(comment), class: "hover:text-white", data: { turbo_frame: "_top" } %>
+                <%= button_to "Удалить", comment_path(comment), method: :delete, class: "hover:text-red-400", data: { turbo_confirm: "Удалить комментарий?" }, form: { data: { turbo_frame: "_top" } } %>
+              </p>
+            <% end %>
+          </div>
+          <div class="mt-3 flex items-center justify-between gap-3">
+            <p class="leading-6 text-[#cbd5e1]"><%= comment.body %></p>
+            <%= render "likes/button", record: comment %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-[#94a3b8]">Пока нет комментариев — начните обсуждение.</p>
+  <% end %>
+</section>
+<% end %>
+
+<section>
+  <div class="mt-6 rounded-xl border border-[#2a2a32] bg-[#1a1a1f] p-5">
+    <% if logged_in? %>
+      <h3 class="mb-3 font-medium">Добавить комментарий</h3>
+      <%= form_with model: [@post, Comment.new] do |f| %>
+        <%= f.text_area :body, rows: 4, placeholder: "Напишите свое замечание...", class: field_classes %>
+        <div class="mt-3">
+          <%= f.submit "Отправить", class: primary_button_classes %>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-[#94a3b8]">
+        <%= link_to "Войдите", login_path, class: "text-[#7c3aed] hover:underline", data: { turbo_frame: "_top" } %>, чтобы оставить комментарий.
+      </p>
+    <% end %>
+  </div>
+</section>

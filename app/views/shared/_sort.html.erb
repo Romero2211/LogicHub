@@ -1,0 +1,19 @@
+<%
+  param_name = local_assigns.fetch(:param_name, :sort)
+  options = local_assigns.fetch(:options, Post::SORTS)
+  selected = local_assigns[:selected] || options.keys.first
+  turbo_frame = local_assigns[:turbo_frame]
+%>
+<%= form_with url: request.path,
+    method: :get,
+    class: "flex items-center gap-2 text-sm text-[#94a3b8]",
+    data: { preserve_scroll: true, turbo_frame: turbo_frame }.compact do %>
+  <% if local_assigns[:query].present? %>
+    <%= hidden_field_tag :q, query %>
+  <% end %>
+  <%= label_tag param_name, "Сортировка:" %>
+  <%= select_tag param_name,
+      options_for_select(options.map { |value, label| [label, value] }, selected),
+      onchange: "this.form.requestSubmit()",
+      class: "sort-select rounded-lg border border-[#2a2a32] bg-[#0f0f12] px-3 py-1.5 pr-9 text-white focus:border-[#7c3aed] focus:outline-none" %>
+<% end %>

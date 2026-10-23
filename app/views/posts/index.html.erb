@@ -1,0 +1,55 @@
+<% if @query.blank? %>
+  <section class="mb-10 overflow-hidden rounded-2xl border border-[#2a2a32] bg-[#1a1a1f]">
+    <div class="grid items-center gap-8 px-6 py-10 md:grid-cols-2 md:px-10">
+      <div>
+        <h1 class="text-3xl font-bold md:text-5xl">
+          THINK. QUESTION. <span class="text-[#7c3aed]">DISCUSS.</span>
+        </h1>
+        <p class="mt-4 text-[#94a3b8]">
+          Логические несостыковки, теории и идеи о фильмах, сериалах, играх и ИИ.
+        </p>
+        <% if logged_in? %>
+          <%= link_to "+ Создать пост", new_post_path,
+              class: "mt-6 inline-block rounded-lg bg-[#7c3aed] px-5 py-2.5 font-medium" %>
+        <% else %>
+          <%= link_to "Войдите, чтобы создать пост", login_path,
+              class: "mt-6 inline-block rounded-lg border border-[#2a2a32] px-5 py-2.5" %>
+        <% end %>
+      </div>
+
+      <div class="relative">
+        <%= image_tag "/images/hero.jpg",
+            alt: "Ноутбук в темноте — думать, спрашивать, обсуждать",
+            class: "h-56 w-full rounded-xl object-cover md:h-80" %>
+        <div class="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-l from-transparent to-[#1a1a1f]/50"></div>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<%= turbo_frame_tag "posts_feed" do %>
+  <% if @query.present? %>
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-xl font-semibold">Результаты: «<%= @query %>»</h1>
+      <%= render "shared/sort", selected: @sort, query: @query, turbo_frame: "posts_feed" %>
+    </div>
+    <% if @posts.empty? %>
+      <p class="rounded-xl border border-[#2a2a32] bg-[#1a1a1f] p-6 text-[#94a3b8]">
+        Ничего не найдено. Попробуйте другое слово.
+      </p>
+    <% end %>
+  <% else %>
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h2 class="text-xl font-semibold">Последние обсуждения</h2>
+      <%= render "shared/sort", selected: @sort, query: @query, turbo_frame: "posts_feed" %>
+    </div>
+  <% end %>
+
+  <%= render @posts %>
+
+  <% if @pagy.last > 1 %>
+    <div class="pagy mt-8 flex justify-center text-sm text-[#94a3b8]">
+      <%== @pagy.series_nav %>
+    </div>
+  <% end %>
+<% end %>

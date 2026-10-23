@@ -1,0 +1,82 @@
+<%= form_with model: post, class: "space-y-6" do |f| %>
+  <% if post.errors.any? %>
+    <ul class="rounded-lg bg-red-500/15 px-4 py-3 text-sm text-red-200">
+      <% post.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :title, "Заголовок", class: label_classes %>
+    <%= f.text_field :title, maxlength: 150, placeholder: "Введите заголовок поста", class: field_classes %>
+    <p class="mt-1 text-right text-xs text-[#64748b]">до 150 символов</p>
+  </div>
+
+  <div>
+    <p class="<%= label_classes %>">Категория</p>
+    <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <% Post.categories.keys.each do |key| %>
+        <label class="cursor-pointer">
+          <%= f.radio_button :category, key, class: "peer sr-only" %>
+          <span class="flex min-h-[5.5rem] flex-col items-center justify-center rounded-xl border border-[#2a2a32] bg-[#0f0f12] px-3 py-4 text-center text-sm text-[#cbd5e1] peer-checked:border-[#7c3aed] peer-checked:bg-[#7c3aed]/15 peer-checked:text-white">
+            <%= category_label(key) %>
+          </span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :body, "Текст поста", class: label_classes %>
+    <%= f.text_area :body, rows: 8, placeholder: "Расскажите подробнее о вашей идее...", class: field_classes %>
+  </div>
+
+  <div>
+    <%= f.label :source_url, "Ссылка на источник (необязательно)", class: label_classes %>
+    <%= f.url_field :source_url, placeholder: "https://example.com", class: field_classes %>
+    <p class="mt-1 text-xs text-[#64748b]">Ссылка на IMDb, Steam, статью или другой источник.</p>
+  </div>
+
+  <div>
+    <%= f.label :image, "Изображение (необязательно)", class: label_classes %>
+
+    <% if post.persisted? && post.image.attached? && post.image.blob.persisted? %>
+      <div class="mb-3 overflow-hidden rounded-xl border border-[#2a2a32]">
+        <%= image_tag post.image, class: "max-h-48 w-full object-cover" %>
+      </div>
+      <label class="mb-3 flex items-center gap-2 text-sm text-[#94a3b8]">
+        <%= f.check_box :remove_image, {}, "1", "0" %>
+        Удалить текущее изображение
+      </label>
+    <% end %>
+
+    <div data-controller="image-preview">
+      <div data-image-preview-target="preview" class="hidden overflow-hidden rounded-xl border border-[#7c3aed] bg-[#0f0f12]">
+        <img data-image-preview-target="image" alt="Превью изображения" class="max-h-64 w-full object-cover">
+        <div class="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+          <p data-image-preview-target="name" class="truncate text-white"></p>
+          <button type="button" data-action="image-preview#clear" class="shrink-0 text-[#94a3b8] hover:text-white">
+            Убрать
+          </button>
+        </div>
+      </div>
+
+      <label data-image-preview-target="empty"
+             data-action="dragover->image-preview#dragover dragleave->image-preview#dragleave drop->image-preview#drop"
+             class="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#2a2a32] bg-[#0f0f12] px-4 py-8 text-center text-sm text-[#94a3b8] hover:border-[#7c3aed]">
+        <span class="mb-1 text-white">Перетащите изображение сюда</span>
+        <span>или нажмите для выбора файла · JPEG, PNG, WebP, GIF · до 5 МБ</span>
+        <%= f.file_field :image,
+            accept: "image/jpeg,image/png,image/webp,image/gif",
+            class: "sr-only",
+            data: { image_preview_target: "input", action: "change->image-preview#change" } %>
+      </label>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    <%= f.submit post.persisted? ? "Сохранить" : "Опубликовать пост", class: primary_button_classes %>
+    <%= link_to "Отмена", post.persisted? ? post : posts_path, class: secondary_button_classes %>
+  </div>
+<% end %>

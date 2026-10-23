@@ -1,0 +1,20 @@
+<section class="mx-auto max-w-md rounded-2xl border border-[#2a2a32] bg-[#1a1a1f] p-6 md:p-8">
+  <h1 class="text-2xl font-bold">Вход</h1>
+  <p class="mt-2 mb-6 text-sm text-[#94a3b8]">Войдите, чтобы создавать посты и оставлять комментарии.</p>
+
+  <%= form_with url: login_path, class: "space-y-4" do |f| %>
+    <div>
+      <%= f.label :email, class: label_classes %>
+      <%= f.email_field :email, class: field_classes %>
+    </div>
+    <div>
+      <%= f.label :password, "Пароль", class: label_classes %>
+      <%= f.password_field :password, class: field_classes %>
+    </div>
+    <%= f.submit "Войти", class: "#{primary_button_classes} w-full" %>
+  <% end %>
+
+  <p class="mt-6 text-center text-sm text-[#94a3b8]">
+    <%= link_to "Нет аккаунта? Регистрация", new_user_path, class: "text-[#7c3aed] hover:underline" %>
+  </p>
+</section>

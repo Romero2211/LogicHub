@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru" class="bg-[#0f0f12]">
+  <head>
+    <title><%= content_for(:title) || "Logic Hub" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Logic Hub">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-[#0f0f12] text-white">
+    <header class="border-b border-[#2a2a32] bg-[#1a1a1f]/80">
+      <div class="container mx-auto flex flex-col gap-3 px-5 py-4 md:flex-row md:items-center md:justify-between">
+        <%= link_to "LogicHub", root_path, class: "text-xl font-semibold" %>
+        <nav class="flex flex-wrap items-center gap-4 text-sm text-[#94a3b8]">
+          <%= link_to "Posts", posts_path %>
+          <% Post.categories.keys.each do |key| %>
+            <%= link_to category_label(key), category_path(key) %>
+          <% end %>
+          <% if logged_in? %>
+            <span><%= current_user.email %></span>
+            <%= button_to "Logout", logout_path, method: :delete %>
+          <% else %>
+            <%= form_with url: posts_path, method: :get, class: "flex items-center" do %>
+              <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
+              <%= search_field_tag :q, params[:q],
+              placeholder: "Search posts ...", class: "w-40 rounded-lg border border-[#2a2a32] bg-[#0f0f12] px-3 py-1.5 text-sm text-white placeholder:text-[#64748b] focus:border-[#7c3aed] focus:outline-none md:w-56" %>
+              <%= submit_tag "Search", class: "hidden" %>
+            <% end %>
+            <%= link_to "Login", login_path, class: "rounded-lg border border-[#2a2a32] px-3 py-1.5 text-white hover:border-[#7c3aed] hover:bg-[#7c3aed]/10" %>
+            <%= link_to "Sign up", new_user_path, class: "rounded-lg bg-[#7c3aed] px-3 py-1.5 text-white hover:bg-[#6d28d9]" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-5 py-8">
+      <% if notice.present? %>
+        <p class="mb-4 rounded-lg bg-violet-500/20 px-4 py-2 text-violet-200"><%= notice %></p>
+      <% end %>
+      <% if alert.present? %>
+        <p class="mb-4 rounded-lg bg-red-500/20 px-4 py-2 text-red-200"><%= alert %></p>
+      <% end %>
+      <%= yield %>
+    </main>
+    <footer class="border-t border-[#2a2a32] bg-[#1a1a1f]/50">
+      <div class="container mx-auto grid gap-8 px-5 py-10 text-sm text-[#94a3b8] md:grid-cols-3">
+        <div>
+          <p class="font-semibold text-white">LogicHub</p>
+          <p class="mt-2 max-w-xs">Платформа для логических дискуссий о мире вокруг нас.</p>
+        </div>
+        <div>
+          <p class="font-semibold text-white">Быстрые ссылки</p>
+          <p class="mt-2 flex flex-col gap-1">
+            <%= link_to "Посты", posts_path, class: "hover:text-white" %>
+            <%= link_to "Вход", login_path, class: "hover:text-white" %>
+            <%= link_to "Регистрация", new_user_path, class: "hover:text-white" %>
+          </p>
+        </div>
+        <div>
+          <p class="font-semibold text-white">Категории</p>
+          <p class="mt-2 flex flex-col gap-1">
+            <% Post.categories.keys.each do |key| %>
+              <%= link_to category_label(key), category_path(key), class: "hover:text-white" %>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

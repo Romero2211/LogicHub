@@ -1,0 +1,25 @@
+<nav class="mb-4 text-sm text-[#94a3b8]">
+  <%= link_to "Главная", root_path, class: "hover:text-white", data: { turbo_frame: "_top" } %>
+  <span> › </span>
+  <span class="text-white"><%= category_label(@category) %></span>
+</nav>
+
+<%= turbo_frame_tag "posts_feed" do %>
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-bold"><%= category_label(@category) %></h1>
+    <%= render "shared/sort", selected: @sort, turbo_frame: "posts_feed" %>
+  </div>
+
+  <% if @posts.any? %>
+    <%= render @posts %>
+    <% if @pagy.last > 1 %>
+      <div class="pagy mt-8 flex justify-center text-sm text-[#94a3b8]">
+        <%== @pagy.series_nav %>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="rounded-xl border border-[#2a2a32] bg-[#1a1a1f] p-6 text-[#94a3b8]">
+      В этой категории пока нет постов.
+    </p>
+  <% end %>
+<% end %>

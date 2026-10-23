@@ -1,0 +1,26 @@
+<div id="<%= dom_id(record, :like) %>" data-preserve-scroll>
+  <% if logged_in? %>
+    <% if liked?(record) %>
+      <%= button_to like_path_for(record),
+          method: :delete,
+          form: { data: { turbo_stream: true } },
+          class: "inline-flex items-center gap-1 text-[#7c3aed] hover:text-[#6d28d9]" do %>
+        <span>♥</span>
+        <span><%= record.likes.size %></span>
+      <% end %>
+    <% else %>
+      <%= button_to like_path_for(record),
+          method: :post,
+          form: { data: { turbo_stream: true } },
+          class: "inline-flex items-center gap-1 text-[#94a3b8] hover:text-[#7c3aed]" do %>
+        <span>♡</span>
+        <span><%= record.likes.size %></span>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= link_to login_path, class: "inline-flex items-center gap-1 text-[#94a3b8] hover:text-white", data: { turbo_frame: "_top" } do %>
+      <span>♡</span>
+      <span><%= record.likes.size %></span>
+    <% end %>
+  <% end %>
+</div>

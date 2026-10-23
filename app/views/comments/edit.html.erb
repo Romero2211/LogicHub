@@ -1,0 +1,23 @@
+<section class="rounded-2xl border border-[#2a2a32] bg-[#1a1a1f] p-6 md:p-8">
+  <h1 class="text-2xl font-bold">Редактировать комментарий</h1>
+
+  <%= form_with model: @comment, class: "mt-6 space-y-4" do |f| %>
+    <% if @comment.errors.any? %>
+      <ul class="rounded-lg bg-red-500/15 px-4 py-3 text-sm text-red-200">
+        <% @comment.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div>
+      <%= f.label :body, "Текст", class: label_classes %>
+      <%= f.text_area :body, rows: 4, class: field_classes %>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <%= f.submit "Сохранить", class: primary_button_classes %>
+      <%= link_to "Назад к посту", @comment.post, class: secondary_button_classes %>
+    </div>
+  <% end %>
+</section>
