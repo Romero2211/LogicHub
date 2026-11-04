@@ -12,13 +12,13 @@ class PostsController < ApplicationController
   def index
     @query = params[:q].to_s.strip
     @sort = Post::SORTS.key?(params[:sort]) ? params[:sort] : "newest"
-    posts = Post.search(@query).sorted_by(@sort).with_attached_image
+    posts = Post.search(@query).sorted_by(@sort).with_attached_image.includes(user: { avatar_attachment: :blob })
     @pagy, @posts = pagy(:offset, posts, limit: 10)
   end
 
   def show
     @comment_sort = Comment::SORTS.key?(params[:comment_sort]) ? params[:comment_sort] : "newest"
-    @comments = @post.comments.includes(:user, :likes).sorted_by(@comment_sort)
+    @comments = @post.comments.includes(:likes, user: { avatar_attachment: :blob }).sorted_by(@comment_sort)
   end
 
   def new
@@ -58,7 +58,7 @@ class PostsController < ApplicationController
   private
 
   def set_post
-    @post = Post.find(params[:id])
+    @post = Post.includes(user: { avatar_attachment: :blob }).find(params[:id])
   end
 
   def post_params

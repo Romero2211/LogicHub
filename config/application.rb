@@ -39,6 +39,8 @@ module LogicHub
     # Don't generate system test files.
     config.generators.system_tests = nil
 
-    config.active_job.queue_adapter = :sidekiq
+    # Background jobs without Redis (Active Storage analyze/variant jobs use this).
+    # Production overrides to :solid_queue in config/environments/production.rb
+    config.active_job.queue_adapter = :async
   end
 end

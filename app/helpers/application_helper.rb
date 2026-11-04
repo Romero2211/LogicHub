@@ -42,4 +42,15 @@ module ApplicationHelper
   def secondary_button_classes
     "inline-flex items-center justify-center rounded-lg border border-[#2a2a32] bg-[#1a1a1f] px-4 py-2.5 text-[#94a3b8] hover:text-white"
   end
+
+  def user_avatar_tag(user, size: 32, class_name: "h-8 w-8 text-xs")
+    classes = "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#7c3aed]/30 object-cover text-white #{class_name}"
+
+    if user.avatar.attached? && user.avatar.blob.persisted?
+      image_tag user.avatar, alt: user.display_name, class: classes
+    else
+      content_tag :span, user.initials, class: classes
+    end
+  end
 end
+

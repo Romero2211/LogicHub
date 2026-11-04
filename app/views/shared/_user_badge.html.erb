@@ -1,0 +1,9 @@
+<% size = local_assigns.fetch(:size, 28) %>
+<% show_date = local_assigns[:date] %>
+<span class="inline-flex items-center gap-2">
+  <%= user_avatar_tag user, size: size, class_name: "h-7 w-7 text-xs" %>
+  <span class="text-white"><%= user.display_name %></span>
+  <% if show_date.present? %>
+    <span class="text-[#94a3b8]">· <%= show_date %></span>
+  <% end %>
+</span>

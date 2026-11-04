@@ -10,7 +10,7 @@ class CategoriesController < ApplicationController
     @sort = Post::SORTS.key?(params[:sort]) ? params[:sort] : "newest"
     @pagy, @posts = pagy(
       :offset,
-      Post.public_send(@category).sorted_by(@sort).with_attached_image,
+      Post.public_send(@category).sorted_by(@sort).with_attached_image.includes(user: { avatar_attachment: :blob }),
       limit: 10
     )
   end

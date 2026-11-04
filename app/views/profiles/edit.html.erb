@@ -1,0 +1,70 @@
+<section class="mx-auto max-w-2xl">
+  <nav class="mb-4 text-sm text-[#94a3b8]">
+    <%= link_to "Кабинет", profile_path, class: "hover:text-white" %>
+    <span> › </span>
+    <span class="text-white">Редактирование профиля</span>
+  </nav>
+
+  <h1 class="mb-6 text-2xl font-bold">Профиль пользователя</h1>
+
+  <%= form_with model: current_user, url: profile_path, method: :patch, class: "space-y-6 rounded-2xl border border-[#2a2a32] bg-[#1a1a1f] p-6 md:p-8" do |f| %>
+    <% if current_user.errors.any? %>
+      <ul class="rounded-lg bg-red-500/15 px-4 py-3 text-sm text-red-200">
+        <% current_user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div>
+      <%= f.label :nickname, "Никнейм", class: label_classes %>
+      <%= f.text_field :nickname,
+          maxlength: 24,
+          placeholder: "например, logic_fan",
+          class: field_classes %>
+      <p class="mt-1 text-xs text-[#64748b]">3–24 символа: латиница, цифры и _. Именно он будет на карточках постов.</p>
+    </div>
+
+    <div>
+      <%= f.label :avatar, "Аватар", class: label_classes %>
+
+      <% if current_user.avatar.attached? && current_user.avatar.blob.persisted? %>
+        <div class="mb-3 flex items-center gap-4">
+          <%= user_avatar_tag current_user, size: 72, class_name: "h-18 w-18 text-xl" %>
+          <label class="flex items-center gap-2 text-sm text-[#94a3b8]">
+            <%= f.check_box :remove_avatar, {}, "1", "0" %>
+            Удалить текущий аватар
+          </label>
+        </div>
+      <% end %>
+
+      <div data-controller="image-preview">
+        <div data-image-preview-target="preview" class="mb-3 hidden overflow-hidden rounded-xl border border-[#7c3aed] bg-[#0f0f12]">
+          <img data-image-preview-target="image" alt="Превью аватара" class="mx-auto max-h-48 object-cover">
+          <div class="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+            <p data-image-preview-target="name" class="truncate text-white"></p>
+            <button type="button" data-action="image-preview#clear" class="shrink-0 text-[#94a3b8] hover:text-white">
+              Убрать
+            </button>
+          </div>
+        </div>
+
+        <label data-image-preview-target="empty"
+               data-action="dragover->image-preview#dragover dragleave->image-preview#dragleave drop->image-preview#drop"
+               class="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#2a2a32] bg-[#0f0f12] px-4 py-8 text-center text-sm text-[#94a3b8] hover:border-[#7c3aed]">
+          <span class="mb-1 text-white">Загрузить аватар</span>
+          <span>JPEG, PNG, WebP, GIF · до 5 МБ</span>
+          <%= f.file_field :avatar,
+              accept: "image/jpeg,image/png,image/webp,image/gif",
+              class: "sr-only",
+              data: { image_preview_target: "input", action: "change->image-preview#change" } %>
+        </label>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <%= f.submit "Сохранить профиль", class: primary_button_classes %>
+      <%= link_to "Отмена", profile_path, class: secondary_button_classes %>
+    </div>
+  <% end %>
+</section>

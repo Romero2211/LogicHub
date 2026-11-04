@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   resources :users, only: [:new, :create]
+  resource :profile, only: [:show, :edit, :update]
   get "login", to: "sessions#new"
   post "login", to: "sessions#create"
   delete "logout", to: "sessions#destroy"

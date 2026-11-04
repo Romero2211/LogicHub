@@ -14,11 +14,9 @@
 
   <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[#94a3b8]">
     <p>
-      <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#7c3aed]/30 text-xs text-white">
-        <%= @post.user.email.to_s.first.upcase %>
-      </span>
-      <span class="ml-2 text-white"><%= @post.user.email %></span>
-      · <%= @post.created_at.strftime("%d.%m.%Y, %H:%M") %>
+      <%= render "shared/user_badge",
+          user: @post.user,
+          date: @post.created_at.strftime("%d.%m.%Y, %H:%M") %>
     </p>
 
     <% if logged_in? && @post.user == current_user %>
@@ -71,11 +69,9 @@
         <div class="rounded-xl border border-[#2a2a32] bg-[#1a1a1f] p-4">
           <div class="flex items-start justify-between gap-3">
             <p class="text-sm">
-              <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#2a2a32] text-xs">
-                <%= comment.user.email.to_s.first.upcase %>
-              </span>
-              <span class="ml-2 font-medium"><%= comment.user.email %></span>
-              <span class="text-[#94a3b8]"> · <%= comment.created_at.strftime("%d.%m.%Y %H:%M") %></span>
+              <%= render "shared/user_badge",
+                  user: comment.user,
+                  date: comment.created_at.strftime("%d.%m.%Y %H:%M") %>
             </p>
             <% if logged_in? && comment.user == current_user %>
               <p class="flex gap-3 text-sm text-[#94a3b8]">

@@ -10,12 +10,16 @@
 roman = User.find_or_create_by!(email: "roman@logichub.test") do |user|
   user.password = "password123"
   user.password_confirmation = "password123"
+  user.nickname = "roman"
 end
+roman.update!(nickname: "roman") if roman.nickname.blank?
 
 alex = User.find_or_create_by!(email: "alex@logichub.test") do |user|
   user.password = "password123"
   user.password_confirmation = "password123"
+  user.nickname = "alex"
 end
+alex.update!(nickname: "alex") if alex.nickname.blank?
 
 posts_data = [
   {
