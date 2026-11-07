@@ -27,7 +27,7 @@ class LikesController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_back fallback_location: likeable_redirect }
+      format.html { redirect_back fallback_location: likeable_redirect, allow_other_host: false }
     end
   end
 

@@ -1,69 +1,72 @@
 <!DOCTYPE html>
 <html lang="ru" class="bg-[#0f0f12]">
   <head>
-    <title><%= content_for(:title) || "Logic Hub" %></title>
+    <title><%= content_for(:title) || "LogicHub" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Logic Hub">
+    <meta name="application-name" content="LogicHub">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-[#0f0f12] text-white">
-    <header class="border-b border-[#2a2a32] bg-[#1a1a1f]/80">
-      <div class="container mx-auto flex flex-col gap-3 px-5 py-4 md:flex-row md:items-center md:justify-between">
-        <%= link_to "LogicHub", root_path, class: "text-xl font-semibold" %>
-        <nav class="flex flex-wrap items-center gap-4 text-sm text-[#94a3b8]">
-          <%= link_to "Posts", posts_path %>
+  <body class="flex min-h-screen flex-col bg-[#0f0f12] text-white">
+    <header class="sticky top-0 z-40 border-b border-[#2a2a32] bg-[#1a1a1f]/90 backdrop-blur">
+      <div class="container mx-auto flex flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <%= link_to "LogicHub", root_path, class: "text-xl font-semibold tracking-tight text-white hover:text-[#c4b5fd]" %>
+
+        <nav class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[#94a3b8]">
+          <%= link_to "Посты", posts_path, class: "hover:text-white #{(current_page?(root_path) || current_page?(posts_path)) && params[:q].blank? ? 'text-white' : ''}" %>
           <% Post.categories.keys.each do |key| %>
-            <%= link_to category_label(key), category_path(key) %>
+            <%= link_to category_label(key), category_path(key),
+                class: "hover:text-white #{request.path == category_path(key) ? 'text-white' : ''}" %>
           <% end %>
+
           <%= form_with url: posts_path, method: :get, class: "flex items-center" do %>
             <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
             <%= search_field_tag :q, params[:q],
-                placeholder: "Search posts ...",
-                class: "w-40 rounded-lg border border-[#2a2a32] bg-[#0f0f12] px-3 py-1.5 text-sm text-white placeholder:text-[#64748b] focus:border-[#7c3aed] focus:outline-none md:w-56" %>
-            <%= submit_tag "Search", class: "hidden" %>
+                placeholder: "Поиск постов...",
+                aria: { label: "Поиск постов" },
+                class: "w-36 rounded-lg border border-[#2a2a32] bg-[#0f0f12] px-3 py-1.5 text-sm text-white placeholder:text-[#64748b] focus:border-[#7c3aed] focus:outline-none sm:w-48 md:w-56" %>
+            <%= submit_tag "Найти", class: "hidden" %>
           <% end %>
+
           <% if logged_in? %>
-            <%= link_to profile_path, class: "inline-flex items-center gap-2 hover:text-white" do %>
+            <%= link_to profile_path, class: "inline-flex items-center gap-2 rounded-lg border border-transparent px-2 py-1 hover:border-[#2a2a32] hover:text-white" do %>
               <%= user_avatar_tag current_user, size: 28, class_name: "h-7 w-7 text-xs" %>
-              <span><%= current_user.display_name %></span>
+              <span class="max-w-[8rem] truncate"><%= current_user.display_name %></span>
             <% end %>
-            <%= link_to "Кабинет", profile_path, class: "hover:text-white" %>
-            <%= button_to "Logout", logout_path, method: :delete %>
+            <%= button_to "Выйти", logout_path, method: :delete,
+                class: "rounded-lg border border-[#2a2a32] px-3 py-1.5 text-white hover:border-[#7c3aed] hover:bg-[#7c3aed]/10",
+                form: { class: "inline" } %>
           <% else %>
-            <%= link_to "Login", login_path, class: "rounded-lg border border-[#2a2a32] px-3 py-1.5 text-white hover:border-[#7c3aed] hover:bg-[#7c3aed]/10" %>
-            <%= link_to "Sign up", new_user_path, class: "rounded-lg bg-[#7c3aed] px-3 py-1.5 text-white hover:bg-[#6d28d9]" %>
+            <%= link_to "Вход", login_path, class: "rounded-lg border border-[#2a2a32] px-3 py-1.5 text-white hover:border-[#7c3aed] hover:bg-[#7c3aed]/10" %>
+            <%= link_to "Регистрация", new_user_path, class: "rounded-lg bg-[#7c3aed] px-3 py-1.5 text-white hover:bg-[#6d28d9]" %>
           <% end %>
         </nav>
       </div>
     </header>
 
-    <main class="container mx-auto px-5 py-8">
+    <main class="container mx-auto w-full flex-1 px-5 py-8">
       <% if notice.present? %>
-        <p class="mb-4 rounded-lg bg-violet-500/20 px-4 py-2 text-violet-200"><%= notice %></p>
+        <p class="mb-4 rounded-lg border border-violet-500/30 bg-violet-500/20 px-4 py-2 text-violet-200" role="status"><%= notice %></p>
       <% end %>
       <% if alert.present? %>
-        <p class="mb-4 rounded-lg bg-red-500/20 px-4 py-2 text-red-200"><%= alert %></p>
+        <p class="mb-4 rounded-lg border border-red-500/30 bg-red-500/20 px-4 py-2 text-red-200" role="alert"><%= alert %></p>
       <% end %>
       <%= yield %>
     </main>
-    <footer class="border-t border-[#2a2a32] bg-[#1a1a1f]/50">
+
+    <footer class="mt-auto border-t border-[#2a2a32] bg-[#1a1a1f]/50">
       <div class="container mx-auto grid gap-8 px-5 py-10 text-sm text-[#94a3b8] md:grid-cols-3">
         <div>
           <p class="font-semibold text-white">LogicHub</p>
@@ -73,8 +76,13 @@
           <p class="font-semibold text-white">Быстрые ссылки</p>
           <p class="mt-2 flex flex-col gap-1">
             <%= link_to "Посты", posts_path, class: "hover:text-white" %>
-            <%= link_to "Вход", login_path, class: "hover:text-white" %>
-            <%= link_to "Регистрация", new_user_path, class: "hover:text-white" %>
+            <% if logged_in? %>
+              <%= link_to "Кабинет", profile_path, class: "hover:text-white" %>
+              <%= link_to "Создать пост", new_post_path, class: "hover:text-white" %>
+            <% else %>
+              <%= link_to "Вход", login_path, class: "hover:text-white" %>
+              <%= link_to "Регистрация", new_user_path, class: "hover:text-white" %>
+            <% end %>
           </p>
         </div>
         <div>

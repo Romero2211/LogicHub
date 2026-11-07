@@ -1,4 +1,4 @@
-<nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-[#94a3b8]">
+<nav class="mx-auto mb-6 flex max-w-3xl flex-wrap items-center gap-2 text-sm text-[#94a3b8]">
   <%= link_to "Главная", root_path, class: "hover:text-white" %>
   <span>›</span>
   <%= link_to category_label(@post.category), category_path(@post.category), class: "hover:text-white" %>
@@ -6,7 +6,7 @@
   <span class="text-white"><%= truncate(@post.title, length: 40) %></span>
 </nav>
 
-<article class="rounded-2xl border border-[#2a2a32] bg-[#1a1a1f] p-6 md:p-8">
+<article class="mx-auto max-w-3xl rounded-2xl border border-[#2a2a32] bg-[#1a1a1f] p-6 md:p-8">
   <%= link_to category_label(@post.category), category_path(@post.category),
       class: "inline-block rounded-md px-2 py-1 text-xs font-medium #{category_badge_classes(@post.category)}" %>
 
@@ -37,23 +37,24 @@
     </div>
   <% end %>
 
-  <% if @post.source_url.present? %>
+  <% if (safe_url = safe_external_url(@post.source_url)) %>
     <p class="mt-6 text-sm text-[#94a3b8]">
       Источник:
-      <%= link_to @post.source_url, @post.source_url, target: "_blank", rel: "noopener", class: "text-[#7c3aed] hover:underline" %>
+      <%= link_to safe_url, safe_url, target: "_blank", rel: "noopener noreferrer", class: "text-[#7c3aed] hover:underline" %>
     </p>
   <% end %>
 
+
   <p class="mt-6 flex flex-wrap items-center gap-4 border-t border-[#2a2a32] pt-4 text-sm text-[#94a3b8]">
     <%= render "likes/button", record: @post %>
-    <span>💬 <%= @post.comments.count %> комментариев</span>
+    <span>💬 <%= @post.comments.size %> комментариев</span>
   </p>
 </article>
 
-<%= turbo_frame_tag "comments_feed" do %>
+<%= turbo_frame_tag "comments_feed", class: "mx-auto block max-w-3xl" do %>
 <section class="mt-10">
   <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-    <h2 class="text-xl font-semibold">Комментарии (<%= @post.comments.count %>)</h2>
+    <h2 class="text-xl font-semibold">Комментарии (<%= @comments.size %>)</h2>
     <% if @comments.any? %>
       <%= render "shared/sort",
           param_name: :comment_sort,
@@ -93,7 +94,7 @@
 </section>
 <% end %>
 
-<section>
+<section class="mx-auto max-w-3xl">
   <div class="mt-6 rounded-xl border border-[#2a2a32] bg-[#1a1a1f] p-5">
     <% if logged_in? %>
       <h3 class="mb-3 font-medium">Добавить комментарий</h3>

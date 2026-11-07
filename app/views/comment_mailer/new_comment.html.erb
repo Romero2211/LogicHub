@@ -1,0 +1,19 @@
+<p>Привет, <%= @author.display_name %>!</p>
+
+<p>
+  Пользователь <strong><%= @commenter.display_name %></strong>
+  оставил комментарий к вашему посту
+  <strong>«<%= @post.title %>»</strong>:
+</p>
+
+<blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 3px solid #7c3aed; background: #f4f4f5; color: #18181b;">
+  <%= simple_format(@comment.body) %>
+</blockquote>
+
+<p>
+  <%= link_to "Открыть обсуждение", post_url(@post) %>
+</p>
+
+<p style="color: #71717a; font-size: 13px;">
+  Вы получили это письмо, потому что являетесь автором поста на LogicHub.
+</p>

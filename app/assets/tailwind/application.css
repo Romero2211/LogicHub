@@ -13,6 +13,22 @@
     background-color: #0f0f12;
     color: #ffffff;
   }
+
+  a {
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+}
+
+/* button_to generates a form — keep logout/like controls inline in flex rows */
+form.button_to {
+  display: inline;
 }
 
 .sort-select {

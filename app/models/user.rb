@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include ImageAttachable
+
   has_secure_password
 
   has_many :posts
@@ -7,6 +9,7 @@ class User < ApplicationRecord
   has_one_attached :avatar
 
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :password, length: { minimum: 8 }, if: -> { password.present? }
   validates :nickname,
             uniqueness: { case_sensitive: false, allow_nil: true },
             length: { minimum: 3, maximum: 24, allow_nil: true },
@@ -15,6 +18,7 @@ class User < ApplicationRecord
               message: "только латиница, цифры и _",
               allow_nil: true
             }
+  validates_attached_image :avatar, error_key: :avatar
 
   before_validation :normalize_nickname
 

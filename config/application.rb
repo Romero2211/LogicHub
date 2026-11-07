@@ -42,5 +42,14 @@ module LogicHub
     # Background jobs without Redis (Active Storage analyze/variant jobs use this).
     # Production overrides to :solid_queue in config/environments/production.rb
     config.active_job.queue_adapter = :async
+
+    # Extra browser hardening headers (on top of Rails defaults).
+    config.action_dispatch.default_headers.merge!(
+      "X-Content-Type-Options" => "nosniff",
+      "X-Frame-Options" => "SAMEORIGIN",
+      "Referrer-Policy" => "strict-origin-when-cross-origin",
+      "Permissions-Policy" => "camera=(), microphone=(), geolocation=()"
+    )
   end
 end
+

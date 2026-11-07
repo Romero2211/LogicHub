@@ -52,5 +52,18 @@ module ApplicationHelper
       content_tag :span, user.initials, class: classes
     end
   end
+
+  # Only http(s) URLs — blocks javascript:/data: XSS via href.
+  def safe_external_url(url)
+    return if url.blank?
+
+    uri = URI.parse(url.to_s.strip)
+    return unless uri.is_a?(URI::HTTP) && uri.host.present?
+
+    uri.to_s
+  rescue URI::InvalidURIError
+    nil
+  end
 end
+
 

@@ -1,4 +1,6 @@
 class Post < ApplicationRecord
+  include ImageAttachable
+
   belongs_to :user
 
   enum :category, {
@@ -16,7 +18,9 @@ class Post < ApplicationRecord
   validates :title, presence: true, length: { minimum: 5, maximum: 150 }
   validates :body, presence: true, length: { minimum: 10 }
   validates :category, presence: true
-  validate :acceptable_image
+  validates :source_url, length: { maximum: 2000 }, allow_blank: true
+  validate :source_url_must_be_http_https
+  validates_attached_image :image
 
   SORTS = {
     "newest" => "Сначала новые",
@@ -47,15 +51,14 @@ class Post < ApplicationRecord
 
   private
 
-  def acceptable_image
-    return unless image.attached?
+  def source_url_must_be_http_https
+    return if source_url.blank?
 
-    unless image.content_type.in?(%w[image/jpeg image/png image/webp image/gif])
-      errors.add(:image, "должна быть JPEG, PNG, WebP или GIF")
+    uri = URI.parse(source_url.strip)
+    unless uri.is_a?(URI::HTTP) && uri.host.present?
+      errors.add(:source_url, "должна быть ссылкой http:// или https://")
     end
-
-    if image.byte_size > 5.megabytes
-      errors.add(:image, "не должна быть больше 5 МБ")
-    end
+  rescue URI::InvalidURIError
+    errors.add(:source_url, "имеет неверный формат")
   end
 end

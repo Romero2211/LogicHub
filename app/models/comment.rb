@@ -11,6 +11,10 @@ class Comment < ApplicationRecord
 
   validates :body, presence: true, length: { minimum: 2, maximum: 1000 }
 
+  # after_create_commit — после успешного INSERT и commit транзакции.
+  # deliver_later ставит отправку в Active Job (:async в development).
+  after_create_commit :notify_post_author
+
   scope :sorted_by, ->(key) {
     case key.to_s
     when "oldest"
@@ -24,4 +28,13 @@ class Comment < ApplicationRecord
       order(created_at: :desc)
     end
   }
+
+  private
+
+  def notify_post_author
+    return if user_id == post.user_id
+
+    CommentMailer.with(comment: self).new_comment.deliver_later
+  end
 end
+

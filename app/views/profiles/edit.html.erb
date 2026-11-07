@@ -30,7 +30,7 @@
 
       <% if current_user.avatar.attached? && current_user.avatar.blob.persisted? %>
         <div class="mb-3 flex items-center gap-4">
-          <%= user_avatar_tag current_user, size: 72, class_name: "h-18 w-18 text-xl" %>
+          <%= user_avatar_tag current_user, size: 72, class_name: "h-20 w-20 text-xl" %>
           <label class="flex items-center gap-2 text-sm text-[#94a3b8]">
             <%= f.check_box :remove_avatar, {}, "1", "0" %>
             Удалить текущий аватар
